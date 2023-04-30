@@ -1,13 +1,10 @@
 class Ball {
   constructor(game) {
-    this.position = { x: 50, y: 50 };
-    this.speed = { x: 2, y: 3 };
-    this.direction = { x: this.speed.x, y: this.speed.y };
+    this.game = game;
+    this.position = { x: Math.floor(this.game.width / 2), y: Math.floor(this.game.height / 2) };
+    this.speed = { x: this.game.speedX, y: this.game.speedY };
+    this.direction = { x: this.game.directionX, y: this.game.directionY };
     this.size = 30;
-    this.gameArea = {
-      y1: 0,
-      y2: game.height,
-    };
   }
 
   draw(ctx) {
@@ -16,51 +13,78 @@ class Ball {
   }
 
   move() {
-    //move
-    this.position.x += this.direction.x;
-    this.position.y += this.direction.y;
-
-    // check bottom collision
-    if (this.position.y + this.size > this.gameArea.y2) {
-      this.direction.y = -this.speed.y;
+    if (this.direction.x > 0) {
+      this.game.paddleL.enabled = false;
+      this.game.paddleR.enabled = true;
+    } else {
+      this.game.paddleL.enabled = true;
+      this.game.paddleR.enabled = false;
     }
 
     //check top collision
-    if (this.position.y < this.gameArea.y1) {
+    if (this.direction.y < 0 && this.position.y < 0) {
+      this.speedUpY();
       this.direction.y = this.speed.y;
     }
 
-    //check collision on Righ Paddle
-    if (this.direction.x > 0) {
-      if (
-        ((this.position.y > game.paddleR.area.y1 &&
-          this.position.y < game.paddleR.area.y2) ||
-          (this.position.y + this.size > game.paddleR.area.y1 &&
-            this.position.y + this.size < game.paddleR.area.y2)) &&
-        this.position.x + this.size > game.paddleR.area.x1 &&
-        this.position.x + this.size < game.paddleR.area.x2
-      ) {
-        this.direction.x = -this.speed.x;
-      }
+    // check bottom collision
+    if (this.direction.y > 0 && this.position.y + this.size > this.game.height) {
+      this.speedUpY();
+      this.direction.y = -this.speed.y;
     }
 
     //check collision on Left Paddle
-    if (this.direction.x < 0) {
-      if (
-        ((this.position.y > game.paddleL.area.y1 &&
-          this.position.y < game.paddleL.area.y2) ||
-          (this.position.y + this.size > game.paddleL.area.y1 &&
-            this.position.y + this.size < game.paddleL.area.y2)) &&
-        this.position.x > game.paddleL.area.x1 &&
-        this.position.x < game.paddleL.area.x2
-      ) {
-        this.direction.x = this.speed.x;
-      }
+    if (
+      this.checkHitY(this.game.paddleL) &&
+      this.position.x > this.game.paddleL.area.x1 &&
+      this.position.x < this.game.paddleL.area.x2
+    ) {
+      this.speedUpX();
+      this.direction.x = this.speed.x;
     }
+
+    //check collision on Left Wall
+    if (this.direction.x < 0 && this.position.x + this.size < 0) {
+      this.game.restart();
+    }
+
+    //check collision on Righ Paddle
+    if (
+      this.checkHitY(this.game.paddleR) &&
+      this.position.x + this.size > this.game.paddleR.area.x1 &&
+      this.position.x + this.size < this.game.paddleR.area.x2
+    ) {
+      this.speedUpX();
+      this.direction.x = -this.speed.x;
+    }
+
+    //check collision on Righ Wall
+    if (this.direction.x > 0 && this.position.x > this.game.width) {
+      this.game.restart();
+    }
+    
+    //move
+    this.position.x += this.direction.x;
+    this.position.y += this.direction.y;
   }
 
-  update(ctx) {
+  animate(ctx) {
     this.move();
     this.draw(ctx);
+  }
+
+  speedUpY() {
+    this.speed.y += 0.5;
+  }
+
+  speedUpX() {
+    this.speed.x += 0.5;
+  }
+
+  checkHitY(paddle) {
+    return (
+      (this.position.y > paddle.area.y1 && this.position.y < paddle.area.y2) ||
+      (this.position.y + this.size > paddle.area.y1 && this.position.y + this.size < paddle.area.y2)
+    );
   }
 }

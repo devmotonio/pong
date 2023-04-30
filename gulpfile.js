@@ -67,10 +67,7 @@ function watchTask() {
   watch("./src/scss/*.scss", compileSass);
   watch("./src/css/*.css", devPackCSS);
   watch("./src/js_main/*.js", packJsMain);
-  watch(
-    ["./dist/assets/css/*.css", "./dist/assets/js/*.js", "./dist/*.*"],
-    browsersyncReload
-  );
+  watch(["./dist/assets/css/*.css", "./dist/assets/js/*.js", "./dist/*.*"],browsersyncReload);
 }
 
 // Default Gulp Task

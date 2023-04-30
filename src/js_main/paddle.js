@@ -1,17 +1,18 @@
 class Paddle {
-  constructor(game, isRight) {
+  constructor(game, isLeft) {
     this.width = 30;
     this.height = 150;
     this.speed = 10;
     this.direction = 0;
     this.pad = 10;
+    this.enabled = false;
     this.gameArea = {
       y1: this.pad,
       y2: game.height - this.height - this.pad,
     };
 
     this.position = {
-      x: isRight ? this.pad : game.width - this.width - this.pad,
+      x: isLeft ? this.pad : game.width - this.width - this.pad,
       y: this.pad,
     };
 
@@ -32,15 +33,17 @@ class Paddle {
   }
 
   move() {
-    this.position.y += this.direction;
-    if (this.position.y < this.gameArea.y1) {
-      this.position.y = this.gameArea.y1;
+    if (this.enabled) {
+      this.position.y += this.direction;
+      if (this.position.y < this.gameArea.y1) {
+        this.position.y = this.gameArea.y1;
+      }
+      if (this.position.y > this.gameArea.y2) {
+        this.position.y = this.gameArea.y2;
+      }
+      this.area.y1 = this.position.y;
+      this.area.y2 = this.position.y + this.height;
     }
-    if (this.position.y > this.gameArea.y2) {
-      this.position.y = this.gameArea.y2;
-    }
-    this.area.y1 = this.position.y;
-    this.area.y2 = this.position.y + this.height;
   }
 
   stop() {
@@ -52,7 +55,7 @@ class Paddle {
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
-  update(ctx) {
+  animate(ctx) {
     this.move();
     this.draw(ctx);
   }
