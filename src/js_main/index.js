@@ -1,2 +1,2 @@
-let game = new Game(820, 520);
+let game = new Game(Math.floor(window.innerWidth * 0.8), 520);
 game.run();

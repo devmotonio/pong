@@ -1,18 +1,19 @@
 class Game {
   constructor(width, height) {
-    this.width = width;
-    this.height = height;
     this.canvas = document.getElementById("gameScreen");
     this.ctx = this.canvas.getContext("2d");
-    this.divRank = document.getElementById("rank");
+    this.divSide = document.getElementById("side");
     this.rank = [];
 
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
+    this.canvas.width = width;
+    this.canvas.height = height;
     this.canvas.style.float = "left";
+    this.canvas.style.backgroundColor = "#000";
 
-    this.divRank.style.width = "20%";
-    this.divRank.style.float = "right";
+    this.divSide.style.float = "left";
+    this.divSide.style.textAlign = "center";
+    this.divSide.style.paddingLeft = "5%";
+    this.divSide.style.paddingRight = "5%";
   }
 
   start() {
@@ -32,15 +33,16 @@ class Game {
   }
 
   restart() {
+    let divRank = document.getElementById("rank");
     this.rank.push(this.currentTimer);
     this.rank.sort();
     this.rank.reverse();
     if (this.rank.length > 5) {
       this.rank.pop();
     }
-    this.divRank.innerHTML = "";
+    divRank.innerHTML = "";
     this.rank.forEach((timer) => {
-      this.divRank.innerHTML += "<p>" + this.formatTimer(timer) + "</p>";
+      divRank.innerHTML += "<p>" + this.formatTimer(timer) + "</p>";
     });
     this.start();
   }
@@ -64,7 +66,7 @@ class Game {
   }
 
   gameLoop() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.animate(this.ctx);
 
     requestAnimationFrame((timestamp) => {

@@ -4,7 +4,7 @@ class Ball {
     this.position = { x: Math.floor(this.game.width / 2), y: Math.floor(this.game.height / 2) };
     this.speed = { x: this.game.speedX, y: this.game.speedY };
     this.direction = { x: this.game.directionX, y: this.game.directionY };
-    this.size = 30;
+    this.size = Math.floor(game.height*0.02);
   }
 
   draw(ctx) {

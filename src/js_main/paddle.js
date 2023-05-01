@@ -1,7 +1,7 @@
 class Paddle {
   constructor(game, isLeft) {
-    this.width = 30;
-    this.height = 150;
+    this.width = Math.floor(game.height*0.02);
+    this.height = Math.floor(game.height*0.1);
     this.speed = 10;
     this.direction = 0;
     this.pad = 10;
@@ -51,7 +51,7 @@ class Paddle {
   }
 
   draw(ctx) {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = "#fff";
     ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
 
