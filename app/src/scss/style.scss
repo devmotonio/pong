@@ -1,0 +1,16 @@
+@import "bootstrap/scss/bootstrap";
+
+#gameScreen{
+    border: 1px solid #000;
+    background-color: #000;;
+}
+
+.ball{
+    position: absolute;
+    background-color: #f00;
+}
+
+.paddle{
+    position: absolute;
+    background-color: #fff;
+}
