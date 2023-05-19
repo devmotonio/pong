@@ -1,14 +1,14 @@
 export default class Paddle {
   constructor(game, isLeft) {
-    this.width = Math.floor(game.canvas.height * 0.03);
-    this.height = Math.floor(game.canvas.height * 0.15);
+    this.width = Math.floor(game.gameScreenHeight * 0.03);
+    this.height = Math.floor(game.gameScreenHeight * 0.15);
     this.speed = 10;
     this.direction = 0;
     this.pad = 10;
     this.enabled = false;
-    this.canvasY1 = this.pad;
-    this.canvasY2 = game.canvas.height - this.height - this.pad;
-    this.positionX = isLeft ? this.pad : game.canvas.width - this.width - this.pad;
+    this.screenY1 = this.pad;
+    this.screenY2 = game.gameScreenHeight - this.height - this.pad;
+    this.positionX = isLeft ? this.pad : game.gameScreenWidth - this.width - this.pad;
     this.positionY = this.pad;
     this.areaX1 = this.positionX;
     this.areaX2 = this.positionX + this.width;
@@ -27,11 +27,11 @@ export default class Paddle {
   move() {
     if (this.enabled) {
       this.positionY += this.direction;
-      if (this.positionY < this.canvasY1) {
-        this.positionY = this.canvasY1;
+      if (this.positionY < this.screenY1) {
+        this.positionY = this.screenY1;
       }
-      if (this.positionY > this.canvasY2) {
-        this.positionY = this.canvasY2;
+      if (this.positionY > this.screenY2) {
+        this.positionY = this.screenY2;
       }
       this.areaY1 = this.positionY;
       this.areaY2 = this.positionY + this.height;

@@ -1,14 +1,14 @@
 export default class Ball {
   constructor(game) {
     this.game = game;
-    this.positionX = Math.floor(this.game.canvas.width / 2);
-    this.positionY = Math.floor(this.game.canvas.height / 2);
+    this.positionX = Math.floor(this.game.gameScreenWidth / 2);
+    this.positionY = Math.floor(this.game.gameScreenHeight / 2);
     this.speedX = this.game.speedX;
     this.speedY = this.game.speedY;
     this.directionX = this.game.directionX;
     this.directionY = this.game.directionY;
-    this.size = Math.floor(this.game.canvas.height * 0.03);
-    this.hitSound = new Audio('./assets/audio/hit.mp3');
+    this.size = Math.floor(this.game.gameScreenHeight * 0.03);
+    this.hitSound = new Audio('./asset/audio/hit.mp3');
   }
 
   draw(ctx) {
@@ -31,7 +31,7 @@ export default class Ball {
     }
 
     // check bottom border collision
-    if (this.directionY > 0 && this.positionY + this.size > this.game.canvas.height) {
+    if (this.directionY > 0 && this.positionY + this.size > this.game.gameScreenHeight) {
       this.hitBorder(-this.speedY);
     }
 
@@ -45,7 +45,7 @@ export default class Ball {
     }
 
     //check collision on Left Wall
-    if (this.directionX < 0 && this.positionX + this.size < 0) {
+    if (this.directionX < 0 && this.positionX + this.size <= 0) {
       this.game.reset();
     }
 
@@ -59,7 +59,7 @@ export default class Ball {
     }
 
     //check collision on Righ Wall
-    if (this.directionX > 0 && this.positionX > this.game.canvas.width) {
+    if (this.directionX > 0 && this.positionX >= this.game.gameScreenWidth) {
       this.game.reset();
     }
 

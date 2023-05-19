@@ -1,26 +1,25 @@
-import Paddle from './paddle.js';
-import Ball from './ball.js';
-import InputHandler from './input.js';
+import Paddle from "./paddle.js";
+import Ball from "./ball.js";
+import InputHandler from "./input.handler.js";
 
 export default class Game {
   constructor(height) {
-    this.canvas = document.getElementById('gameScreen');
-    this.ctx = this.canvas.getContext('2d');
-    this.divSide = document.getElementById('side');
+    this.canvas = document.getElementById("game_screen");
+    this.ctx = this.canvas.getContext("2d");
     this.rank = [];
     this.speedX = 0;
     this.speedY = 0;
     this.directionX = 0;
     this.directionY = 0;
 
-    this.canvas.width = Math.floor(window.innerWidth * 0.8);
+    this.canvas.width = Math.floor(window.visualViewport.width * 0.8);
     this.canvas.height = height;
-    this.canvas.style.float = 'left';
-    this.canvas.style.backgroundColor = '#000';
 
-    this.divSide.style.float = 'left';
-    this.divSide.style.textAlign = 'center';
-    this.divSide.style.width = `${Math.floor(window.innerWidth * 0.16)}px`;
+    this.gameScreenWidth = Math.floor(this.canvas.width * 0.8);
+    this.gameScreenHeight = this.canvas.height;
+
+    this.rankScreenWidth = Math.floor(this.canvas.width * 0.2);
+    this.rankScreenHeight = this.canvas.height;
   }
 
   init() {
@@ -28,7 +27,7 @@ export default class Game {
     this.speedY = Math.floor(Math.random() * 4) + 3;
     this.directionX = Math.random() < 0.5 ? -this.speedX : this.speedX;
     this.directionY = Math.random() < 0.5 ? -this.speedY : this.speedY;
-    
+
     this.startTime = new Date();
 
     this.ball = new Ball(this);
@@ -40,36 +39,56 @@ export default class Game {
   }
 
   reset() {
-    let divRank = document.getElementById('rank');
     this.rank.push(this.currentTimer);
     this.rank.sort();
     this.rank.reverse();
     if (this.rank.length > 5) {
       this.rank.pop();
     }
-    divRank.innerHTML = '';
-    this.rank.forEach((timer) => {
-      divRank.innerHTML += '<p>' + this.formatTimer(timer) + '</p>';
-    });
     this.init();
   }
 
   animate() {
+    let size = 30;
+    let pad = Math.floor(size / 2);
+    let space = size * 1.1;
+
     this.currentTimer = new Date(new Date() - this.startTime.getTime());
-    this.timer = this.formatTimer(this.currentTimer);
-    document.getElementById('timer').innerHTML = this.timer;
+
+    //game screen
+    this.ctx.fillStyle = "#000";
+    this.ctx.fillRect(0, 0, this.gameScreenWidth, this.gameScreenHeight);
 
     this.gameObjects.forEach((object) => object.animate(this.ctx));
+
+    //rank screen
+    this.ctx.fillStyle = "#333";
+    this.ctx.fillRect(this.gameScreenWidth, 0, this.rankScreenWidth, this.rankScreenHeight);
+
+    this.ctx.fillStyle = "#fff";
+    this.ctx.textBaseline = "top";
+    this.ctx.textAlign = "center";
+    this.ctx.font = `${size}px sans-serif`;
+    this.ctx.fillText("TIMER", this.gameScreenWidth + this.rankScreenWidth / 2, pad);
+    this.ctx.fillText(this.formatTimer(this.currentTimer), this.gameScreenWidth + this.rankScreenWidth / 2, pad + space);
+    this.ctx.fillText("RANK", this.gameScreenWidth + this.rankScreenWidth / 2, Math.floor(pad * 2 + space * 2));
+    this.rank.forEach((rank, index) => {
+      this.ctx.fillText(
+        this.formatTimer(rank),
+        this.gameScreenWidth + this.rankScreenWidth / 2,
+        Math.floor(pad * 2+ space * 3) + space * index
+      );
+    });
   }
 
   formatTimer(timer) {
     let hour = timer.getUTCHours();
     let minute = timer.getUTCMinutes();
     let second = timer.getUTCSeconds();
-    let fHour = hour < 10 ? '0' + hour : hour;//hour < 0 ? '00' : 
-    let fMinute = minute < 10 ? '0' + minute : minute;
-    let fSecond = second < 10 ? '0' + second : second;
-    return fHour + ':' + fMinute + ':' + fSecond;
+    let fHour = hour < 10 ? "0" + hour : hour; //hour < 0 ? '00' :
+    let fMinute = minute < 10 ? "0" + minute : minute;
+    let fSecond = second < 10 ? "0" + second : second;
+    return fHour + ":" + fMinute + ":" + fSecond;
   }
 
   gameLoop() {
@@ -83,8 +102,6 @@ export default class Game {
 
   start() {
     this.init();
-    requestAnimationFrame((timestamp) => {
-      this.gameLoop();
-    });
+    this.gameLoop();
   }
 }

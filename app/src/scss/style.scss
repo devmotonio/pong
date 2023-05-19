@@ -1,7 +1,15 @@
 @import "bootstrap/scss/bootstrap";
 
+canvas#game_screen{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    background-color: #ddd;
+}
+
 #gameScreen{
-    border: 1px solid #000;
+    border: none;
     background-color: #000;;
 }
 
