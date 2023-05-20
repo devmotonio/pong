@@ -1,19 +1,12 @@
-export default class Paddle {
-  constructor(game, isLeft) {
-    this.width = Math.floor(game.gameScreenHeight * 0.03);
-    this.height = Math.floor(game.gameScreenHeight * 0.15);
+import Area from "./area";
+export default class Paddle extends Area{
+  constructor(width, height, x1, y1, screenTop, screenBottom) {
+    super(width, height, x1, y1);
     this.speed = 10;
     this.direction = 0;
-    this.pad = 10;
     this.enabled = false;
-    this.screenY1 = this.pad;
-    this.screenY2 = game.gameScreenHeight - this.height - this.pad;
-    this.positionX = isLeft ? this.pad : game.gameScreenWidth - this.width - this.pad;
-    this.positionY = this.pad;
-    this.areaX1 = this.positionX;
-    this.areaX2 = this.positionX + this.width;
-    this.areaY1 = 0;
-    this.areaY2 = 0;
+    this.screenTop = screenTop;
+    this.screenBottom = screenBottom;
   }
 
   moveUp() {
@@ -24,17 +17,25 @@ export default class Paddle {
     this.direction = this.speed;
   }
 
+  getSpeed()
+  {
+    return this.speed;
+  }
+
+  setSpeed(speed)
+  {
+    this.speed += speed;
+  }
+
   move() {
     if (this.enabled) {
-      this.positionY += this.direction;
-      if (this.positionY < this.screenY1) {
-        this.positionY = this.screenY1;
+      this.y1 += this.direction;
+      if (this.y1 < this.screenTop) {
+        this.y1 = this.screenTop;
       }
-      if (this.positionY > this.screenY2) {
-        this.positionY = this.screenY2;
+      if (this.y2 > this.screenBottom) {
+        this.y1 = this.screenBottom - this.height;
       }
-      this.areaY1 = this.positionY;
-      this.areaY2 = this.positionY + this.height;
     }
   }
 
@@ -42,13 +43,9 @@ export default class Paddle {
     this.direction = 0;
   }
 
-  draw(ctx) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(this.positionX, this.positionY, this.width, this.height);
-  }
-
   animate(ctx) {
     this.move();
-    this.draw(ctx);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(this.x1, this.y1, this.width, this.height);
   }
 }

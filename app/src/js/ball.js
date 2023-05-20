@@ -1,102 +1,83 @@
-export default class Ball {
-  constructor(game) {
-    this.game = game;
-    this.positionX = Math.floor(this.game.gameScreenWidth / 2);
-    this.positionY = Math.floor(this.game.gameScreenHeight / 2);
-    this.speedX = this.game.speedX;
-    this.speedY = this.game.speedY;
-    this.directionX = this.game.directionX;
-    this.directionY = this.game.directionY;
-    this.size = Math.floor(this.game.gameScreenHeight * 0.03);
-    this.hitSound = new Audio('./asset/audio/hit.mp3');
-  }
+import Area from "./area";
+export default class Ball extends Area {
+  constructor(width, height, x1, y1, screenTop, screenRight, screenBottom, screenLeft) {
+    super(width, height, x1, y1);
+    this.screenTop = screenTop;
+    this.screenRight = screenRight;
+    this.screenBottom = screenBottom;
+    this.screenLeft = screenLeft;
 
-  draw(ctx) {
-    ctx.fillStyle = '#f00';
-    ctx.fillRect(this.positionX, this.positionY, this.size, this.size);
+    this.speedStep = 0.5;
+    this.speedX = Math.floor(Math.random() * 6) + 4;
+    this.speedY = Math.floor(Math.random() * 6) + 4;
+    this.directionX = Math.random() < 0.5 ? -1 : 1;
+    this.directionY = Math.random() < 0.5 ? -1 : 1;
+    this.hitSound = new Audio("./asset/audio/hit.mp3");
   }
 
   move() {
-    if (this.directionX > 0) {
-      this.game.paddleL.enabled = false;
-      this.game.paddleR.enabled = true;
-    } else {
-      this.game.paddleL.enabled = true;
-      this.game.paddleR.enabled = false;
-    }
-
-    //check top border collision
-    if (this.directionY < 0 && this.positionY < 0) {
-      this.hitBorder(this.speedY);
-    }
-
-    // check bottom border collision
-    if (this.directionY > 0 && this.positionY + this.size > this.game.gameScreenHeight) {
-      this.hitBorder(-this.speedY);
-    }
-
-    //check collision on Left Paddle
-    if (
-      this.checkHitY(this.game.paddleL) &&
-      this.positionX > this.game.paddleL.areaX1 &&
-      this.positionX < this.game.paddleL.areaX2
-    ) {
-      this.hitPaddle(this.speedX);
-    }
-
-    //check collision on Left Wall
-    if (this.directionX < 0 && this.positionX + this.size <= 0) {
-      this.game.reset();
-    }
-
-    //check collision on Righ Paddle
-    if (
-      this.checkHitY(this.game.paddleR) &&
-      this.positionX + this.size > this.game.paddleR.areaX1 &&
-      this.positionX + this.size < this.game.paddleR.areaX2
-    ) {
-      this.hitPaddle(-this.speedX);
-    }
-
-    //check collision on Righ Wall
-    if (this.directionX > 0 && this.positionX >= this.game.gameScreenWidth) {
-      this.game.reset();
-    }
-
     //move
-    this.positionX += this.directionX;
-    this.positionY += this.directionY;
+    this.x1 += this.speedX * this.directionX;
+    this.y1 += this.speedY * this.directionY;
   }
 
   animate(ctx) {
     this.move();
-    this.draw(ctx);
+    ctx.fillStyle = "#f00";
+    ctx.fillRect(this.x1, this.y1, this.width, this.height);
   }
 
-  speedUpY() {
-    this.speedY += 0.5;
+  setSpeedY(step = this.speedStep) {
+    this.speedY += step;
   }
 
-  speedUpX() {
-    this.speedX += 0.5;
+  setSpeedX(step = this.speedStep) {
+    this.speedX += step;
   }
 
-  hitPaddle(speedX) {
-    this.speedUpX();
-    this.directionX = speedX;
+  getSpeedX()
+  {
+    return this.speedX;
+  }
+
+  getSpeedY()
+  {
+    return this.speedY;
+  }
+
+  hitPaddle() {
     this.hitSound.play();
+    this.setSpeedX();
+    this.directionX = -this.directionX;
   }
 
-  hitBorder(speedY) {
-    this.speedUpY();
-    this.directionY = speedY;
+  hitBorder() {
     this.hitSound.play();
+    this.setSpeedY();
+    this.directionY = -this.directionY;
   }
 
-  checkHitY(paddle) {
-    return (
-      (this.positionY > paddle.areaY1 && this.positionY < paddle.areaY2) ||
-      (this.positionY + this.size > paddle.areaY1 && this.positionY + this.size < paddle.areaY2)
-    );
+  //check screen top border collision
+  checkHitTop() {
+    if (this.directionY < 0 && this.y1 < 0) {
+      this.hitBorder();
+    }
+  }
+
+  //check collision on Righ Wall
+  checkHitRight() {
+    return this.directionX > 0 && this.x1 >= this.screenRight;
+  }
+
+  // check screen bottom border collision
+  checkHitBottom() {
+    if (this.directionY > 0 && this.y2 > this.screenBottom) {
+      this.hitBorder();
+    }
+  }
+
+  //check collision on Left Wall
+  checkHitLeft() {
+    return this.directionX < 0 && this.x2 <= 0;
   }
 }
